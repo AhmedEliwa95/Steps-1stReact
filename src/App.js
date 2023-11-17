@@ -69,41 +69,86 @@ import { Children, useState } from "react";
 
 ///// Excercise-2 \\\\\
 export default function App() {
-  const [bill, setBill] = useState(0);
-  const [avgTib, setAvgTib] = useState(null);
-
-  function handleAvgTib(x) {
-    avgTib === null ? setAvgTib(x) : setAvgTib((s) => s + x);
-    console.log(avgTib);
-  }
   return (
     <>
-      <Bill bill={bill} setBill={setBill} />
-      <SelectPrecent onAvgTip={handleAvgTib}> My Tip</SelectPrecent>
+      <TipCalculator />
     </>
   );
 }
-function Bill({ bill, setBill }) {
+function TipCalculator() {
+  const [bill, setBill] = useState("");
+  const [precentage1, setPrecentage1] = useState(0);
+  const [precentage2, setPrecentage2] = useState(0);
+
+  const tip = bill * ((precentage1 + precentage2) / 2 / 100);
+  const total = tip + bill;
+
+  function handleReset() {
+    setBill(() => 0);
+    setPrecentage1(0);
+    setPrecentage2(0);
+  }
+
+  return (
+    <div>
+      <BillInput bill={bill} onSetBill={setBill} />
+      <SelectPrecentage onSelect={setPrecentage1} precentage={precentage1}>
+        {" "}
+        My Tip
+      </SelectPrecentage>
+      <SelectPrecentage onSelect={setPrecentage2} precentage={precentage2}>
+        {" "}
+        My Friend Tip
+      </SelectPrecentage>
+      {bill > 0 && (
+        <>
+          {" "}
+          <Output bill={bill} tip={tip} total={total} />
+          <Reset onReset={handleReset}></Reset>
+        </>
+      )}
+    </div>
+  );
+}
+
+function BillInput({ bill, onSetBill }) {
   return (
     <dev>
-      <p>How Much the bill was</p>
-      <input type="number" onChange={(e) => setBill(e.target.value)} />
+      <label>How Much the bill was</label>
+      <input
+        type="text"
+        placeholder="Bill Value"
+        value={bill}
+        onChange={(e) => onSetBill(e.target.value * 1)}
+      />
       {console.log(bill)}
     </dev>
   );
 }
-function SelectPrecent({ onAvgTip, children }) {
+function SelectPrecentage({ precentage, onSelect, children }) {
   return (
     <div>
-      <p>{children}</p>
-      <select onChange={(e) => onAvgTip(e.target.value)}>
-        <option value={0}>dissatisfied 0%</option>
-        <option value={5}>it was ok 5%</option>
-        <option value={10}>it was good 10%</option>
-        <option value={20}>it was amazing 20%</option>
+      <label>{children}</label>
+      <select value={precentage} onChange={(e) => onSelect(e.target.value * 1)}>
+        <option value="0">dissatisfied 0%</option>
+        <option value="5">it was ok 5%</option>
+        <option value="10">it was good 10%</option>
+        <option value="20">it was amazing 20%</option>
       </select>
     </div>
   );
+}
+function Output({ bill, tip, total }) {
+  return (
+    <div>
+      <h3>
+        You pay {total} ( {bill}$ + x {tip}$ )
+      </h3>
+    </div>
+  );
+}
+function Reset({ onReset }) {
+  return <button onClick={onReset}>Reset</button>;
 }
 
 // ///// Challenge \\\\\\\\
